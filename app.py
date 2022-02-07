@@ -17,7 +17,9 @@ db.create_all()
 @app.get('/api/cupcakes')
 def get_all_cupcakes():
     """Returns json about all cupcakes.
-    CR: mentions and show what route returns
+       Responds with JSON like:
+       {cupcakes: [{id, flavor, size, rating, image}, ...]}.
+       The values should come from each cupcake instance.
     """
 
     cupcakes = Cupcake.query.all()
@@ -28,7 +30,11 @@ def get_all_cupcakes():
 
 @app.get('/api/cupcakes/<int:cupcake_id>')
 def get_single_cupcake(cupcake_id):
-    """Get data about a single cupcake."""
+    """Get data about a single cupcake.
+       Responds with JSON like:
+       {cupcake: {id, flavor, size, rating, image}}.
+       Should raise a 404 if the cupcake cannot be found.
+    """
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
     serialized = cupcake.serialize()
@@ -38,14 +44,15 @@ def get_single_cupcake(cupcake_id):
 
 @app.post('/api/cupcakes')
 def create_cupcake():
-    """
-    Create a cupcake with flavor, size,
-    rating and image data from the body of the request.
+    """Create a cupcake with flavor, size,
+       rating and image data from the body of the request.
+       Respond with JSON like:
+       {cupcake: {id, flavor, size, rating, image}}
     """
 
-    flavor = request.json["flavor"]
-    size = request.json["size"]
-    rating = request.json["rating"]
+    flavor = request.json.get("flavor")
+    size = request.json.get("size")
+    rating = request.json.get("rating")
     image = request.json.get("image") or None
 
     new_cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
@@ -56,3 +63,27 @@ def create_cupcake():
     serialized = new_cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
+
+
+@app.patch('/api/cupcakes/<int:cupcake_id>')
+def update_cupcake(cupcake_id):
+    """Updates a cupcake.
+       The request body may include flavor, size, rating
+       and image data but not all fields are required.
+       This should raise a 404 if the cupcake cannot be found.
+       Respond with JSON of the newly-updated cupcake:
+       {cupcake: {id, flavor, size, rating, image}}
+    """
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    cupcake.flavor = request.json.get("flavor") or cupcake.flavor
+    cupcake.size = request.json.get("size") or cupcake.size
+    cupcake.rating = request.json.get("rating") or cupcake.rating
+    cupcake.image = request.json.get("image") or cupcake.image
+
+    db.session.commit()
+    serialized = cupcake.serialize()
+
+    return (jsonify(cupcake=serialized))
+

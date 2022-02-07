@@ -13,6 +13,7 @@ app.config["SQLALCHEMY_ECHO"] = True
 connect_db(app)
 db.create_all()
 
+
 @app.get('/api/cupcakes')
 def get_all_cupcakes():
     """Get data about all cupcakes."""
@@ -52,4 +53,3 @@ def create_cupcake():
     serialized = new_cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
-

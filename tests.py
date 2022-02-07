@@ -92,13 +92,13 @@ class CupcakeViewsTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 201)
 
-            data = resp.json.copy()
+            copy = resp.json.copy()
 
             # don't know what ID we'll get, make sure it's an int & normalize
-            self.assertIsInstance(data['cupcake']['id'], int)
-            del data['cupcake']['id']
+            self.assertIsInstance(copy['cupcake']['id'], int)
+            del copy['cupcake']['id']
 
-            self.assertEqual(data, {
+            self.assertEqual(copy, {
                 "cupcake": {
                     "flavor": "TestFlavor2",
                     "size": "TestSize2",

@@ -1,6 +1,6 @@
 """Flask app for Cupcakes"""
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
@@ -12,6 +12,14 @@ app.config["SQLALCHEMY_ECHO"] = True
 
 connect_db(app)
 db.create_all()
+
+
+@app.get('/')
+def render_homepage():
+    """Renders HTML for homepage used to query API.
+    """
+
+    return render_template("index.html")
 
 
 @app.get('/api/cupcakes')
@@ -100,4 +108,3 @@ def delete_cupcake(cupcake_id):
     db.session.commit()
 
     return (jsonify({"deleted": cupcake_id}))
-

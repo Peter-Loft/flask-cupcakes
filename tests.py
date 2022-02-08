@@ -109,5 +109,28 @@ class CupcakeViewsTestCase(TestCase):
 
             self.assertEqual(Cupcake.query.count(), 2)
 
+    def test_edit_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.patch(url, json={"size": "GIGANTE"})
+
+            self.assertEqual(resp.status_code, 200)
+
+            copy = resp.json.copy()
+
+            self.assertIsInstance(copy['cupcake']['id'], int)
+            del copy['cupcake']['id']
+
+            self.assertEqual(copy, {
+                "cupcake": {
+                    "flavor": "TestFlavor",
+                    "size": "GIGANTE",
+                    "rating": 5,
+                    "image": "http://test.com/cupcake.jpg"
+                }
+            })
+
+            self.assertEqual(Cupcake.query.count(), 1)
+ 
 
     

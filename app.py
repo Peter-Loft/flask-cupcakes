@@ -88,7 +88,7 @@ def update_cupcake(cupcake_id):
     return (jsonify(cupcake=serialized))
 
 
-@app.route('/api/cupcakes/<int:cupcake_id>', methods=["DELETE"])
+@app.delete('/api/cupcakes/<int:cupcake_id>')
 def delete_cupcake(cupcake_id):
     """Delete cupcake with the id passed in the URL. 
        Respond with JSON like {deleted: [cupcake-id]}.

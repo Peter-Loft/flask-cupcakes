@@ -100,3 +100,4 @@ def delete_cupcake(cupcake_id):
     db.session.commit()
 
     return (jsonify({"deleted": cupcake_id}))
+

@@ -116,13 +116,14 @@ class CupcakeViewsTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
 
+            #CR: don't need a copy, could use resp.json wherever we have copy
             copy = resp.json.copy()
 
-            self.assertIsInstance(copy['cupcake']['id'], int)
-            del copy['cupcake']['id']
+            self.assertEqual(copy['cupcake']['id'], self.cupcake.id)
 
             self.assertEqual(copy, {
                 "cupcake": {
+                    "id": self.cupcake.id,
                     "flavor": "TestFlavor",
                     "size": "GIGANTE",
                     "rating": 5,
@@ -131,6 +132,17 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 1)
- 
 
-    
+    def test_delete_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 200)
+
+            #CR: don't need a copy, could use resp.json wherever we have copy
+            copy = resp.json.copy()
+
+            self.assertEqual(copy, {"deleted": self.cupcake.id})
+
+            self.assertEqual(Cupcake.query.count(), 0)
